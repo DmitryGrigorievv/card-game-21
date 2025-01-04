@@ -13,7 +13,7 @@ export default function Game() {
 
 
     const drawCards = async (count) => {
-        if (!deckId) return [];
+        if (!deckId) return []
         const responses = await Promise.all(Array.from({ length: count }, () => getCard(deckId)));
         return responses.filter(response => response.success).flatMap(response => response.cards);
     };
@@ -29,12 +29,12 @@ export default function Game() {
 
         // Получаем начальные карты для игрока и дилера
         const initialCards = await drawCards(4); // Запрашиваем 4 карты
-        if (initialCards.length >= 4) {
-            setPlayerCards(initialCards.slice(0, 2)); // Первые две карты игрока
-            setDealerCards(initialCards.slice(2, 4)); // Первые две карты дилера
-            setPlayerScore(calculateScore(initialCards.slice(0, 2)));
-            setDealerScore(calculateScore(initialCards.slice(2, 4)));
-        }
+        // if (initialCards.length >= 4) {
+        //     setPlayerCards(initialCards.slice(0, 2)); // Первые две карты игрока
+        //     setDealerCards(initialCards.slice(2, 4)); // Первые две карты дилера
+        //     setPlayerScore(calculateScore(initialCards.slice(0, 2)));
+        //     setDealerScore(calculateScore(initialCards.slice(2, 4)));
+        // }
     };
 
     const handleHit = async () => {
@@ -67,11 +67,14 @@ export default function Game() {
         setGameOver(true);
 
         // Определяем победителя
-        if (newDealerScore > 21 || playerScore > newDealerScore) {
+        if (playerScore > 21) {
+            alert('Перебор!');
+        }
+        if (newDealerScore > 21 || (playerScore > newDealerScore && playerScore <= 21)) {
             alert('Игрок выигрывает!');
         } else if (playerScore < newDealerScore) {
             alert('Дилер выигрывает!');
-        } else {
+        } else if (playerScore === newDealerScore) {
             alert('Ничья!');
         }
     };
@@ -88,7 +91,6 @@ export default function Game() {
                 {playerCards.map((card, index) => (
                     <div key={index}>
                         <img src={card.image} alt={`${card.value} of ${card.suit}`} />
-                        {card.value} of {card.suit}
                     </div>
                 ))}
                 <p>Очки игрока: {playerScore}</p>
@@ -98,7 +100,6 @@ export default function Game() {
                 {dealerCards.map((card, index) => (
                     <div key={index}>
                         <img src={card.image} alt={`${card.value} of ${card.suit}`} />
-                        {card.value} of {card.suit}
                     </div>
                 ))}
                 <p>Очки дилера: {dealerScore}</p>
