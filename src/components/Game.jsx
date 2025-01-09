@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { calculateScore } from '../utils/calculateScore'
 import { getDeck } from '../fetchers/getDeck';
 import { getCard } from '../fetchers/getCard';
+import PlayerHand from './PlayerHand';
+import DealerHand from './DealerHand';
+import GameControls from './GameControls';
 
 export default function Game() {
     const [deckId, setDeckId] = useState(null);
@@ -27,14 +30,7 @@ export default function Game() {
         setDealerScore(0);
         setGameOver(false);
 
-        // Получаем начальные карты для игрока и дилера
-        const initialCards = await drawCards(4); // Запрашиваем 4 карты
-        // if (initialCards.length >= 4) {
-        //     setPlayerCards(initialCards.slice(0, 2)); // Первые две карты игрока
-        //     setDealerCards(initialCards.slice(2, 4)); // Первые две карты дилера
-        //     setPlayerScore(calculateScore(initialCards.slice(0, 2)));
-        //     setDealerScore(calculateScore(initialCards.slice(2, 4)));
-        // }
+
     };
 
     const handleHit = async () => {
@@ -53,9 +49,9 @@ export default function Game() {
         let newDealerScore = dealerScore;
         let newDealerCards = [...dealerCards];
 
-        // Покажем все карты дилера и добавим карты, пока не наберется 17 или больше
+
         while (newDealerScore < 17) {
-            const newCard = (await drawCards(1))[0]; // Возвращаем одну карту
+            const newCard = (await drawCards(1))[0];
             if (newCard) {
                 newDealerCards.push(newCard);
                 newDealerScore = calculateScore(newDealerCards);
@@ -66,9 +62,9 @@ export default function Game() {
         setDealerScore(newDealerScore);
         setGameOver(true);
 
-        // Определяем победителя
+
         if (playerScore > 21) {
-            alert('Перебор!');
+            alert('Перебор! Вы проиграли');
         }
         if (newDealerScore > 21 || (playerScore > newDealerScore && playerScore <= 21)) {
             alert('Игрок выигрывает!');
@@ -86,35 +82,14 @@ export default function Game() {
     return (
         <div>
             <h1>Игра 21</h1>
-            <div>
-                <h2>Карты игрока:</h2>
-                {playerCards.map((card, index) => (
-                    <div key={index}>
-                        <img src={card.image} alt={`${card.value} of ${card.suit}`} />
-                    </div>
-                ))}
-                <p>Очки игрока: {playerScore}</p>
-            </div>
-            <div>
-                <h2>Карты дилера:</h2>
-                {dealerCards.map((card, index) => (
-                    <div key={index}>
-                        <img src={card.image} alt={`${card.value} of ${card.suit}`} />
-                    </div>
-                ))}
-                <p>Очки дилера: {dealerScore}</p>
-            </div>
-            <div>
-                {!gameOver ? (
-                    <>
-                        <button onClick={handleHit}>Взять еще</button>
-                        <button onClick={handleStand}>Хватит</button>
-                    </>
-                ) : (
-                    <button onClick={startGame}>Новая игра</button>
-                )}
-                {gameOver && <p>Игра окончена!</p>}
-            </div>
+            <PlayerHand cards={playerCards} score={playerScore} />
+            <DealerHand cards={dealerCards} score={dealerScore} />
+            <GameControls
+                gameOver={gameOver}
+                onHit={handleHit}
+                onStand={handleStand}
+                onNewGame={startGame}
+            />
         </div>
     );
 }

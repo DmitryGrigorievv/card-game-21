@@ -13,7 +13,7 @@ export const calculateScore = (cards) => {
             }
         });
 
-        // Учитываем тузы
+       
         while (score > 21 && aces > 0) {
             score -= 10;
             aces -= 1;
